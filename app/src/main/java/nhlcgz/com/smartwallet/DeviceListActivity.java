@@ -65,16 +65,6 @@ public class DeviceListActivity extends AppCompatActivity {
         }
     }
 
-    private void saveMac(String key,String value)
-    {
-        SharedPreferences.Editor editor=getSharedPreferences("SmartWallet",MODE_WORLD_WRITEABLE).edit();
-        editor.putString(key,value);
-        editor.commit();
-    }
-    private String readMac(String key)
-    {
-       SharedPreferences sharedPreferences=getSharedPreferences("SmartWallet",MODE_WORLD_READABLE);
-       return sharedPreferences.getString(key,"");
-    }
+
 
 }
