@@ -10,6 +10,7 @@ import android.widget.Button;
 public class MainActivity extends AppCompatActivity {
 
     Button bSetting;
+    String deviceAddress;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -17,22 +18,40 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         bSetting=(Button) findViewById(R.id.bSetting);
 
+        deviceAddress=readAddress("address");
+
+        if(deviceAddress.contains(""))
+        {
+            startActivityForResult(new Intent(MainActivity.this,DeviceListActivity.class),1);
+        }
+
         bSetting.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent=new Intent(MainActivity.this,DeviceListActivity.class);
-                startActivity(intent);
+
+                startActivityForResult(new Intent(MainActivity.this,DeviceListActivity.class),1);
             }
         });
     }
 
-    private void saveMac(String key,String value)
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+
+        String result=data.getExtras().getString("result");
+        if(!result.contains(""))
+        {
+            saveAddress("address",result);
+        }
+        super.onActivityResult(requestCode, resultCode, data);
+    }
+
+    private void saveAddress(String key, String value)
     {
         SharedPreferences.Editor editor=getSharedPreferences("SmartWallet",MODE_WORLD_WRITEABLE).edit();
         editor.putString(key,value);
         editor.commit();
     }
-    private String readMac(String key)
+    private String readAddress(String key)
     {
         SharedPreferences sharedPreferences=getSharedPreferences("SmartWallet",MODE_WORLD_READABLE);
         return sharedPreferences.getString(key,"");

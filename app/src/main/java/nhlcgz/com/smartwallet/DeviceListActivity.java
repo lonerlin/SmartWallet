@@ -49,7 +49,10 @@ public class DeviceListActivity extends AppCompatActivity {
                 String info = ((TextView) view).getText().toString();
                 String address = info.substring(info.length() - 17);
                 // Make an intent to start next MainActivity.
-
+                Intent intent=new Intent();
+                intent.putExtra("result",address);
+                DeviceListActivity.this.setResult(RESULT_OK,intent);
+                finish();
             }
         });
     }
