@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 
@@ -38,9 +39,11 @@ public class MainActivity extends AppCompatActivity {
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
 
         String result=data.getExtras().getString("result");
-        if(!result.contains(""))
+        Log.d("address",result);
+        if(result!="")
         {
             saveAddress("address",result);
+            Log.d("address","Save!");
         }
         super.onActivityResult(requestCode, resultCode, data);
     }
