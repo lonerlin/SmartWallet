@@ -58,8 +58,38 @@ public class BTService extends Service {
 
         };
 
+        btAdapter = BluetoothAdapter.getDefaultAdapter();       // get Bluetooth adapter
+        checkBTState();
+
         return super.onStartCommand(intent, flags, startId);
     }
+
+    //Checks that the Android device Bluetooth is available and prompts to be turned on if off
+    private void checkBTState() {
+
+        if (btAdapter == null) {
+            Log.d("BT SERVICE", "BLUETOOTH NOT SUPPORTED BY DEVICE, STOPPING SERVICE");
+            stopSelf();
+        } else {
+            if (btAdapter.isEnabled()) {
+                Log.d("DEBUG BT", "BT ENABLED! BT ADDRESS : " + btAdapter.getAddress() + " , BT NAME : " + btAdapter.getName());
+                try {
+                    BluetoothDevice device = btAdapter.getRemoteDevice(MAC_ADDRESS);
+                    Log.d("DEBUG BT", "ATTEMPTING TO CONNECT TO REMOTE DEVICE : " + MAC_ADDRESS);
+                    mConnectingThread = new ConnectingThread(device);
+                    mConnectingThread.start();
+                } catch (IllegalArgumentException e) {
+                    Log.d("DEBUG BT", "PROBLEM WITH MAC ADDRESS : " + e.toString());
+                    Log.d("BT SEVICE", "ILLEGAL MAC ADDRESS, STOPPING SERVICE");
+                    stopSelf();
+                }
+            } else {
+                Log.d("BT SERVICE", "BLUETOOTH NOT ON, STOPPING SERVICE");
+                stopSelf();
+            }
+        }
+    }
+
 
     // New Class for Connecting Thread
     private class ConnectingThread extends Thread {
