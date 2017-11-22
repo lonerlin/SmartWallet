@@ -5,6 +5,7 @@ import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothSocket;
 import android.content.Intent;
+import android.os.Binder;
 import android.os.Handler;
 import android.os.IBinder;
 import android.util.Log;
@@ -29,14 +30,23 @@ public class BTService extends Service {
     private ConnectingThread mConnectingThread;
     private ConnectedThread mConnectedThread;
 
+    private ConnectingBinder connectingBinder=new ConnectingBinder();
+
+     class ConnectingBinder extends Binder{
+
+        public void Connecting(String address)
+        {
+            Log.d("Binder",address);
+        }
+    }
+
 
     public BTService() {
     }
 
     @Override
     public IBinder onBind(Intent intent) {
-        // TODO: Return the communication channel to the service.
-        throw new UnsupportedOperationException("Not yet implemented");
+       return connectingBinder;
     }
 
     @Override

@@ -1,7 +1,10 @@
 package nhlcgz.com.smartwallet;
 
+import android.content.ComponentName;
 import android.content.Intent;
+import android.content.ServiceConnection;
 import android.content.SharedPreferences;
+import android.os.IBinder;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -11,15 +14,32 @@ import android.widget.Button;
 public class MainActivity extends AppCompatActivity {
 
     Button bSetting;
+    Button bConnecting;
     String deviceAddress;
+    private BTService.ConnectingBinder connectingBinder;
+
+    private ServiceConnection connection=new ServiceConnection() {
+        @Override
+        public void onServiceConnected(ComponentName name, IBinder service) {
+            connectingBinder=(BTService.ConnectingBinder)service;
+        }
+
+        @Override
+        public void onServiceDisconnected(ComponentName name) {
+
+        }
+    };
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         bSetting=(Button) findViewById(R.id.bSetting);
+        bConnecting=(Button)findViewById(R.id.bConnecting);
 
         deviceAddress=readAddress("address");
+
+        bindService();
 
         if(deviceAddress.contains(""))
         {
@@ -33,6 +53,21 @@ public class MainActivity extends AppCompatActivity {
                 startActivityForResult(new Intent(MainActivity.this,DeviceListActivity.class),1);
             }
         });
+        bConnecting.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Log.d("address","Click");
+                connectingBinder.Connecting(readAddress("address"));
+            }
+        });
+    }
+
+    void bindService()
+    {
+        Intent startIntent=new Intent(this,BTService.class);
+        startService(startIntent);
+        Intent bindIntent=new Intent(this,BTService.class);
+        bindService(bindIntent,connection,BIND_AUTO_CREATE);
     }
 
     @Override
