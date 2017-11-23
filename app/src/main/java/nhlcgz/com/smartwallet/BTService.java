@@ -22,7 +22,7 @@ public class BTService extends Service {
 
     private static final UUID BTMODULEUUID = UUID.fromString("00001101-0000-1000-8000-00805F9B34FB");
     // String for MAC address
-    private static final String MAC_ADDRESS = "YOUR:MAC:ADDRESS:HERE";
+    private  String MAC_ADDRESS = "";
 
     private StringBuilder recDataString = new StringBuilder();
     private BluetoothAdapter btAdapter = null;
@@ -36,7 +36,9 @@ public class BTService extends Service {
 
         public void Connecting(String address)
         {
-            Log.d("Binder",address);
+            MAC_ADDRESS=address;
+            Log.d("Binder",MAC_ADDRESS);
+            checkBTState();
         }
     }
 
@@ -69,7 +71,7 @@ public class BTService extends Service {
         };
 
         btAdapter = BluetoothAdapter.getDefaultAdapter();       // get Bluetooth adapter
-        checkBTState();
+
 
         return super.onStartCommand(intent, flags, startId);
     }
