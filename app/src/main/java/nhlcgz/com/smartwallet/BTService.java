@@ -1,5 +1,7 @@
 package nhlcgz.com.smartwallet;
 
+import android.app.Notification;
+import android.app.PendingIntent;
 import android.app.Service;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
@@ -50,6 +52,30 @@ public class BTService extends Service {
     public IBinder onBind(Intent intent) {
        return connectingBinder;
     }
+
+    @Override
+    public void onCreate() {
+        super.onCreate();
+        startingForeground();
+    }
+
+
+    private void startingForeground()
+    {
+        PendingIntent pendingintent = PendingIntent.getActivity(this, 0,
+                new Intent(this,MainActivity.class), 0);
+
+
+        Notification notification=new Notification.Builder(this)
+                .setContentTitle("Smart Wallet")
+                .setContentText("Smart Wallet on high alert")
+                .setSmallIcon(R.mipmap.ic_launcher)
+                .setContentIntent(pendingintent)
+                .build();
+        Log.d("Timer","startForeground");
+        startForeground(1, notification);
+    }
+
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
