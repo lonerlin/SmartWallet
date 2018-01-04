@@ -7,6 +7,7 @@ import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothSocket;
 import android.content.Intent;
+import android.media.MediaPlayer;
 import android.os.Binder;
 import android.os.Handler;
 import android.os.IBinder;
@@ -29,6 +30,8 @@ public class BTService extends Service {
     private StringBuilder recDataString = new StringBuilder();
     private BluetoothAdapter btAdapter = null;
     private boolean stopThread;
+    private MediaPlayer mediaPlayer;
+
     private ConnectingThread mConnectingThread;
     private ConnectedThread mConnectedThread;
 
@@ -57,6 +60,7 @@ public class BTService extends Service {
     public void onCreate() {
         super.onCreate();
         startingForeground();
+        mediaPlayer=MediaPlayer.create(this,R.raw.bell);
     }
 
 
@@ -76,6 +80,20 @@ public class BTService extends Service {
         startForeground(1, notification);
     }
 
+    private void warn(int beep)
+    {
+        mediaPlayer.reset();
+        mediaPlayer=MediaPlayer.create(this,beep);
+        mediaPlayer.setLooping(true);
+        mediaPlayer.start();
+    }
+    private void stopWarning()
+    {
+        if((mediaPlayer!=null) && (mediaPlayer.isPlaying()))
+        {
+            mediaPlayer.stop();
+        }
+    }
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
