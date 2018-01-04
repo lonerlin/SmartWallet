@@ -11,10 +11,11 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements View.OnClickListener{
 
     Button bSetting;
     Button bConnecting;
+    Button bLookingfor;
     String deviceAddress;
     private BTService.ConnectingBinder connectingBinder;
 
@@ -36,7 +37,8 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         bSetting=(Button) findViewById(R.id.bSetting);
         bConnecting=(Button)findViewById(R.id.bConnecting);
-
+        bLookingfor=(Button)findViewById(R.id.bLookingFor);
+        bLookingfor.setOnClickListener(this);
         deviceAddress=readAddress("address");
 
         bindService();
@@ -93,5 +95,18 @@ public class MainActivity extends AppCompatActivity {
     {
         SharedPreferences sharedPreferences=getSharedPreferences("SmartWallet",MODE_WORLD_READABLE);
         return sharedPreferences.getString(key,"");
+    }
+
+    @Override
+    public void onClick(View v) {
+        switch (v.getId())
+        {
+            case R.id.bLookingFor:
+                if(bLookingfor.getText().toString()==this.getString(R.string.lookingFor))
+                {
+
+                }
+
+        }
     }
 }

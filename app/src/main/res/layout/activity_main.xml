@@ -19,19 +19,30 @@
         android:id="@+id/bSetting"
         android:layout_width="142dp"
         android:layout_height="wrap_content"
-        android:layout_marginStart="168dp"
-        android:text="蓝牙设置"
-        app:layout_constraintStart_toStartOf="@+id/bConnecting"
-        tools:layout_editor_absoluteY="16dp" />
+        android:layout_marginStart="88dp"
+        android:layout_marginTop="24dp"
+        android:text="@string/bluetoothSetting"
+        app:layout_constraintStart_toEndOf="@+id/bConnecting"
+        app:layout_constraintTop_toTopOf="parent" />
 
     <Button
         android:id="@+id/bConnecting"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="40dp"
-        android:layout_marginTop="8dp"
-        android:text="连接"
+        android:layout_marginStart="32dp"
+        android:layout_marginTop="24dp"
+        android:text="@string/connecting"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
+
+    <Button
+        android:id="@+id/bLookingFor"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="32dp"
+        android:layout_marginTop="28dp"
+        android:text="@string/lookingFor"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/bConnecting" />
 
 </android.support.constraint.ConstraintLayout>

@@ -31,19 +31,41 @@ public class BTService extends Service {
     private BluetoothAdapter btAdapter = null;
     private boolean stopThread;
     private MediaPlayer mediaPlayer;
+    private BluetoothSocket bluetoothSocket;
+
 
     private ConnectingThread mConnectingThread;
     private ConnectedThread mConnectedThread;
 
     private ConnectingBinder connectingBinder=new ConnectingBinder();
 
-     class ConnectingBinder extends Binder{
+    /*
+    *0 进入工作状态
+    *1 正常的状态监测
+    * 2 开启防盗
+    *3 取消防盗和警报
+    * 4 寻找钱包
+    * 5 取消寻找
+    * 6 进入休眠状态
+    * */
+
+
+    class ConnectingBinder extends Binder{
 
         public void Connecting(String address)
         {
             MAC_ADDRESS=address;
             Log.d("Binder",MAC_ADDRESS);
             checkBTState();
+        }
+        public void lookingFor(boolean isLooking)
+        {
+            if(isLooking){
+                write(4);
+            }else
+            {
+                write(5);
+            }
         }
     }
 
@@ -145,7 +167,17 @@ public class BTService extends Service {
             }
         }
     }
-
+    public void write(int input) {
+               //converts entered String into bytes
+        try {
+            bluetoothSocket.getOutputStream().write(input);                //write bytes over BT connection via outstream
+        } catch (IOException e) {
+            //if you cannot write, close the application
+            Log.d("DEBUG BT", "UNABLE TO READ/WRITE " + e.toString());
+            Log.d("BT SERVICE", "UNABLE TO READ/WRITE, STOPPING SERVICE");
+            //stopSelf();
+        }
+    }
 
     // New Class for Connecting Thread
     private class ConnectingThread extends Thread {
@@ -166,6 +198,7 @@ public class BTService extends Service {
                 Log.d("BT SERVICE", "SOCKET CREATION FAILED, STOPPING SERVICE");
                 stopSelf();
             }
+            bluetoothSocket=temp;
             mmSocket = temp;
         }
 
@@ -272,7 +305,7 @@ public class BTService extends Service {
                 //if you cannot write, close the application
                 Log.d("DEBUG BT", "UNABLE TO READ/WRITE " + e.toString());
                 Log.d("BT SERVICE", "UNABLE TO READ/WRITE, STOPPING SERVICE");
-                stopSelf();
+                //stopSelf();
             }
         }
 
