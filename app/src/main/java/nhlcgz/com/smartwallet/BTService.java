@@ -37,6 +37,7 @@ public class BTService extends Service {
     private ConnectingThread mConnectingThread;
     private ConnectedThread mConnectedThread;
 
+    private MsgListener msgListener;
     private ConnectingBinder connectingBinder=new ConnectingBinder();
 
     /*
@@ -77,6 +78,12 @@ public class BTService extends Service {
     public IBinder onBind(Intent intent) {
        return connectingBinder;
     }
+
+    public void setMessageListener(MsgListener messageListener)
+    {
+        this.msgListener=messageListener;
+    }
+
 
     @Override
     public void onCreate() {
