@@ -10,6 +10,7 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.TextView;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener{
 
@@ -17,12 +18,20 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     Button bConnecting;
     Button bLookingfor;
     String deviceAddress;
+    Button bOverrangeWarn;
+    TextView tvInfo;
     private BTService.ConnectingBinder connectingBinder;
 
     private ServiceConnection connection=new ServiceConnection() {
         @Override
         public void onServiceConnected(ComponentName name, IBinder service) {
             connectingBinder=(BTService.ConnectingBinder)service;
+            connectingBinder.getService().setMessageListener(new MsgListener() {
+                @Override
+                public void stateChange(int msg) {
+                    tvInfo.setText(msg);
+                }
+            });
         }
 
         @Override
@@ -39,6 +48,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         bConnecting=(Button)findViewById(R.id.bConnecting);
         bLookingfor=(Button)findViewById(R.id.bLookingFor);
         bLookingfor.setOnClickListener(this);
+        tvInfo=(TextView)findViewById(R.id.tvInfo);
+        bOverrangeWarn=(Button)findViewById(R.id.bOverrangeWarn);
+        bOverrangeWarn.setOnClickListener(this);
         deviceAddress=readAddress("address");
 
         bindService();
@@ -112,6 +124,17 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                     connectingBinder.lookingFor(false);
                     bLookingfor.setText(R.string.lookingFor);
                 }
+                break;
+            case R.id.bOverrangeWarn:
+                if(bOverrangeWarn.getText().toString()==this.getString(R.string.overrangeWarn))
+                {
+                    connectingBinder.overrangeWarn(true);
+                    bOverrangeWarn.setText(R.string.stopOverrangeWarn);
+                }else {
+                    connectingBinder.overrangeWarn(false);
+                    bOverrangeWarn.setText(R.string.overrangeWarn);
+                }
+                break;
 
         }
     }

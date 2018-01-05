@@ -4,4 +4,6 @@
     <string name="bluetoothSetting">蓝牙设置</string>
     <string name="lookingFor">寻找钱包</string>
     <string name="stopLookingFor">停止寻找</string>
+    <string name="overrangeWarn">超距报警</string>
+    <string name="stopOverrangeWarn"></string>取消超距报警
 </resources>

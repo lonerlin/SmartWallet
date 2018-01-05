@@ -11,15 +11,19 @@ import android.media.MediaPlayer;
 import android.os.Binder;
 import android.os.Handler;
 import android.os.IBinder;
+import android.os.Vibrator;
 import android.util.Log;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.Timer;
+import java.util.TimerTask;
 import java.util.UUID;
 
 public class BTService extends Service {
 
+    //region Defined
     Handler bluetoothIn;
     final int handlerState = 0;
 
@@ -31,14 +35,18 @@ public class BTService extends Service {
     private BluetoothAdapter btAdapter = null;
     private boolean stopThread;
     private MediaPlayer mediaPlayer;
+    private Vibrator vibrator;
     private BluetoothSocket bluetoothSocket;
-
+    private Timer timerOverrange;
+    private Timer timerAntiTheft;
+    private int failedCount=0;
 
     private ConnectingThread mConnectingThread;
     private ConnectedThread mConnectedThread;
 
     private MsgListener msgListener;
     private ConnectingBinder connectingBinder=new ConnectingBinder();
+    //endregion
 
     /*
     *0 进入工作状态
@@ -68,6 +76,38 @@ public class BTService extends Service {
                 write(5);
             }
         }
+        public BTService getService()
+        {
+            return BTService.this;
+        }
+        public void overrangeWarn(boolean isWorking)
+        {
+            if(isWorking)
+            {
+                timerOverrange=new Timer();
+                timerOverrange.schedule(new TimerTask() {
+                    @Override
+                    public void run() {
+                       // write(1);
+                        failedCount++;
+                        msgListener.stateChange(failedCount);
+                    }
+                },1000,1000);
+            }else
+            {
+
+            }
+        }
+        public void  antiTheftWarn(boolean isWorking)
+        {
+            if(isWorking)
+            {
+
+            }else
+            {
+
+            }
+        }
     }
 
 
@@ -92,13 +132,11 @@ public class BTService extends Service {
         mediaPlayer=MediaPlayer.create(this,R.raw.bell);
     }
 
-
+    //开启
     private void startingForeground()
     {
         PendingIntent pendingintent = PendingIntent.getActivity(this, 0,
                 new Intent(this,MainActivity.class), 0);
-
-
         Notification notification=new Notification.Builder(this)
                 .setContentTitle("Smart Wallet")
                 .setContentText("Smart Wallet on high alert")
@@ -108,21 +146,31 @@ public class BTService extends Service {
         Log.d("Timer","startForeground");
         startForeground(1, notification);
     }
-
+    //region Play and stop the warning function
+    /*播放警告声音*/
     private void warn(int beep)
     {
         mediaPlayer.reset();
         mediaPlayer=MediaPlayer.create(this,beep);
         mediaPlayer.setLooping(true);
         mediaPlayer.start();
+        vibrator=(Vibrator)getSystemService(VIBRATOR_SERVICE);
+        long [] pattern = {100,400,100,400};   // 停止 开启 停止 开启
+        vibrator.vibrate(pattern,10);           //重复两次上面的pattern 如果只想震动一次，index设为-1
     }
+    /*播放警告声音停止*/
     private void stopWarning()
     {
         if((mediaPlayer!=null) && (mediaPlayer.isPlaying()))
         {
             mediaPlayer.stop();
         }
+        if(vibrator!=null)
+        {
+            vibrator.cancel();
+        }
     }
+    //endregion
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
