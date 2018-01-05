@@ -104,7 +104,13 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             case R.id.bLookingFor:
                 if(bLookingfor.getText().toString()==this.getString(R.string.lookingFor))
                 {
-
+                    Log.d("MainActivity","Lookingfor");
+                    connectingBinder.lookingFor(true);
+                    bLookingfor.setText(R.string.stopLookingFor);
+                }else
+                {
+                    connectingBinder.lookingFor(false);
+                    bLookingfor.setText(R.string.lookingFor);
                 }
 
         }
