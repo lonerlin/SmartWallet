@@ -26,10 +26,12 @@ public class BTService extends Service {
     //region Defined
     Handler bluetoothIn;
     final int handlerState = 0;
-
+    final int ORDER = 1;
+    final int WARMING = 2;
+    final int OVERRANGE = 1;
     private static final UUID BTMODULEUUID = UUID.fromString("00001101-0000-1000-8000-00805F9B34FB");
     // String for MAC address
-    private  String MAC_ADDRESS = "";
+    private String MAC_ADDRESS = "";
 
     private StringBuilder recDataString = new StringBuilder();
     private BluetoothAdapter btAdapter = null;
@@ -39,13 +41,13 @@ public class BTService extends Service {
     private BluetoothSocket bluetoothSocket;
     private Timer timerOverrange;
     private Timer timerAntiTheft;
-    private int failedCount=0;
+    private int failedCount = 0;
 
     private ConnectingThread mConnectingThread;
     private ConnectedThread mConnectedThread;
 
     private MsgListener msgListener;
-    private ConnectingBinder connectingBinder=new ConnectingBinder();
+    private ConnectingBinder connectingBinder = new ConnectingBinder();
     //endregion
 
     /*
@@ -59,52 +61,50 @@ public class BTService extends Service {
     * */
 
 
-    class ConnectingBinder extends Binder{
+    class ConnectingBinder extends Binder {
 
-        public void Connecting(String address)
-        {
-            MAC_ADDRESS=address;
-            Log.d("Binder",MAC_ADDRESS);
+        public void Connecting(String address) {
+            MAC_ADDRESS = address;
+            Log.d("Binder", MAC_ADDRESS);
             checkBTState();
         }
-        public void lookingFor(boolean isLooking)
-        {
-            if(isLooking){
+
+        public void lookingFor(boolean isLooking) {
+            if (isLooking) {
                 write(4);
-            }else
-            {
+            } else {
                 write(5);
             }
         }
-        public BTService getService()
-        {
+
+        public BTService getService() {
             return BTService.this;
         }
-        public void overrangeWarn(boolean isWorking)
-        {
-            if(isWorking)
-            {
-                timerOverrange=new Timer();
+
+        public void overrangeWarn(boolean isWorking) {
+            if (isWorking) {
+                timerOverrange = new Timer();
                 timerOverrange.schedule(new TimerTask() {
                     @Override
                     public void run() {
-                       // write(1);
-                        failedCount++;
+                        write(1);
+                        failedCount--;
+                        if (failedCount < -5) {
+                            warn(R.raw.bell);
+                        }
                         msgListener.stateChange(failedCount);
                     }
-                },1000,1000);
-            }else
-            {
-
+                }, 1000, 1000);
+            } else {
+                stopWarning();
+                timerOverrange.cancel();
             }
         }
-        public void  antiTheftWarn(boolean isWorking)
-        {
-            if(isWorking)
-            {
 
-            }else
-            {
+        public void antiTheftWarn(boolean isWorking) {
+            if (isWorking) {
+
+            } else {
 
             }
         }
@@ -116,12 +116,11 @@ public class BTService extends Service {
 
     @Override
     public IBinder onBind(Intent intent) {
-       return connectingBinder;
+        return connectingBinder;
     }
 
-    public void setMessageListener(MsgListener messageListener)
-    {
-        this.msgListener=messageListener;
+    public void setMessageListener(MsgListener messageListener) {
+        this.msgListener = messageListener;
     }
 
 
@@ -129,44 +128,52 @@ public class BTService extends Service {
     public void onCreate() {
         super.onCreate();
         startingForeground();
-        mediaPlayer=MediaPlayer.create(this,R.raw.bell);
+        mediaPlayer = MediaPlayer.create(this, R.raw.bell);
     }
 
+    //region PhoneBak Plus
+    private void PhoneBak(boolean isWorking) {
+        if (isWorking) {
+
+        } else {
+
+        }
+
+    }
+    //endregion
+
     //开启
-    private void startingForeground()
-    {
+    private void startingForeground() {
         PendingIntent pendingintent = PendingIntent.getActivity(this, 0,
-                new Intent(this,MainActivity.class), 0);
-        Notification notification=new Notification.Builder(this)
+                new Intent(this, MainActivity.class), 0);
+        Notification notification = new Notification.Builder(this)
                 .setContentTitle("Smart Wallet")
                 .setContentText("Smart Wallet on high alert")
                 .setSmallIcon(R.mipmap.ic_launcher)
                 .setContentIntent(pendingintent)
                 .build();
-        Log.d("Timer","startForeground");
+        Log.d("Timer", "startForeground");
         startForeground(1, notification);
     }
+
     //region Play and stop the warning function
     /*播放警告声音*/
-    private void warn(int beep)
-    {
+    private void warn(int beep) {
         mediaPlayer.reset();
-        mediaPlayer=MediaPlayer.create(this,beep);
+        mediaPlayer = MediaPlayer.create(this, beep);
         mediaPlayer.setLooping(true);
         mediaPlayer.start();
-        vibrator=(Vibrator)getSystemService(VIBRATOR_SERVICE);
-        long [] pattern = {100,400,100,400};   // 停止 开启 停止 开启
-        vibrator.vibrate(pattern,10);           //重复两次上面的pattern 如果只想震动一次，index设为-1
+        vibrator = (Vibrator) getSystemService(VIBRATOR_SERVICE);
+        long[] pattern = {100, 400, 100, 400};   // 停止 开启 停止 开启
+        vibrator.vibrate(pattern, 10);           //重复两次上面的pattern 如果只想震动一次，index设为-1
     }
+
     /*播放警告声音停止*/
-    private void stopWarning()
-    {
-        if((mediaPlayer!=null) && (mediaPlayer.isPlaying()))
-        {
+    private void stopWarning() {
+        if ((mediaPlayer != null) && (mediaPlayer.isPlaying())) {
             mediaPlayer.stop();
         }
-        if(vibrator!=null)
-        {
+        if (vibrator != null) {
             vibrator.cancel();
         }
     }
@@ -176,7 +183,7 @@ public class BTService extends Service {
     public int onStartCommand(Intent intent, int flags, int startId) {
 
         Log.d("BT SERVICE", "SERVICE STARTED");
-        bluetoothIn = new Handler(){
+        bluetoothIn = new Handler() {
 
             public void handleMessage(android.os.Message msg) {
                 Log.d("DEBUG", "handleMessage");
@@ -185,6 +192,16 @@ public class BTService extends Service {
                     recDataString.append(readMessage);//`enter code here`
                     Log.d("RECORDED", recDataString.toString());
                     // Do stuff here with your data, like adding it to the database
+                }
+                if (msg.what == ORDER) {
+                    int order = (int) msg.arg1;
+                    if (order == OVERRANGE) {
+                        failedCount++;
+                    } else if (order == WARMING) {
+
+                    }
+
+
                 }
                 recDataString.delete(0, recDataString.length());                    //clear all string data
             }
@@ -222,8 +239,10 @@ public class BTService extends Service {
             }
         }
     }
+
+    //Send message to Wallet
     public void write(int input) {
-               //converts entered String into bytes
+        //converts entered String into bytes
         try {
             bluetoothSocket.getOutputStream().write(input);                //write bytes over BT connection via outstream
         } catch (IOException e) {
@@ -253,7 +272,7 @@ public class BTService extends Service {
                 Log.d("BT SERVICE", "SOCKET CREATION FAILED, STOPPING SERVICE");
                 stopSelf();
             }
-            bluetoothSocket=temp;
+            bluetoothSocket = temp;
             mmSocket = temp;
         }
 
@@ -351,6 +370,7 @@ public class BTService extends Service {
                 }
             }
         }
+
         //write method
         public void write(String input) {
             byte[] msgBuffer = input.getBytes();           //converts entered String into bytes
