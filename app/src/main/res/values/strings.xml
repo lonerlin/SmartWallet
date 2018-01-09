@@ -5,5 +5,5 @@
     <string name="lookingFor">寻找钱包</string>
     <string name="stopLookingFor">停止寻找</string>
     <string name="overrangeWarn">超距报警</string>
-    <string name="stopOverrangeWarn"></string>取消超距报警
+    <string name="stopOverrangeWarn">取消超距报警</string>
 </resources>

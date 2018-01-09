@@ -38,11 +38,12 @@ public class BTService extends Service {
     private boolean stopThread;
     private MediaPlayer mediaPlayer;
     private Vibrator vibrator;
+
     private BluetoothSocket bluetoothSocket;
     private Timer timerOverrange;
-    private Timer timerAntiTheft;
+    private Timer timerPhoneBak;
     private int failedCount = 0;
-
+    private LightSensorManager lightSensorManager=LightSensorManager.getInstance();
     private ConnectingThread mConnectingThread;
     private ConnectedThread mConnectedThread;
 
@@ -66,7 +67,10 @@ public class BTService extends Service {
         public void Connecting(String address) {
             MAC_ADDRESS = address;
             Log.d("Binder", MAC_ADDRESS);
+            buildHandle();
             checkBTState();
+           // mConnectedThread= new ConnectedThread(bluetoothSocket);
+            //mConnectedThread.start();
         }
 
         public void lookingFor(boolean isLooking) {
@@ -83,6 +87,7 @@ public class BTService extends Service {
 
         public void overrangeWarn(boolean isWorking) {
             if (isWorking) {
+                failedCount=0;
                 timerOverrange = new Timer();
                 timerOverrange.schedule(new TimerTask() {
                     @Override
@@ -92,7 +97,7 @@ public class BTService extends Service {
                         if (failedCount < -5) {
                             warn(R.raw.bell);
                         }
-                        msgListener.stateChange(failedCount);
+                        //msgListener.stateChange(failedCount);
                     }
                 }, 1000, 1000);
             } else {
@@ -103,9 +108,9 @@ public class BTService extends Service {
 
         public void antiTheftWarn(boolean isWorking) {
             if (isWorking) {
-
+                write(2);
             } else {
-
+                write(3);
             }
         }
     }
@@ -134,9 +139,21 @@ public class BTService extends Service {
     //region PhoneBak Plus
     private void PhoneBak(boolean isWorking) {
         if (isWorking) {
-
+            lightSensorManager.start(this);
+            timerPhoneBak=new Timer();
+            timerPhoneBak.schedule(new TimerTask() {
+                @Override
+                public void run() {
+                    if(lightSensorManager.getLux()>8)
+                    {
+                        warn(R.raw.warning);
+                        write(5);
+                    }
+                }
+            },10000,1000);
         } else {
-
+            timerPhoneBak.cancel();
+            lightSensorManager.stop();
         }
 
     }
@@ -163,9 +180,9 @@ public class BTService extends Service {
         mediaPlayer = MediaPlayer.create(this, beep);
         mediaPlayer.setLooping(true);
         mediaPlayer.start();
-        vibrator = (Vibrator) getSystemService(VIBRATOR_SERVICE);
+       // vibrator = (Vibrator) getSystemService(VIBRATOR_SERVICE);
         long[] pattern = {100, 400, 100, 400};   // 停止 开启 停止 开启
-        vibrator.vibrate(pattern, 10);           //重复两次上面的pattern 如果只想震动一次，index设为-1
+       // vibrator.vibrate(pattern, 10);           //重复两次上面的pattern 如果只想震动一次，index设为-1
     }
 
     /*播放警告声音停止*/
@@ -181,7 +198,11 @@ public class BTService extends Service {
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
+        return super.onStartCommand(intent, flags, startId);
+    }
 
+    private void buildHandle()
+    {
         Log.d("BT SERVICE", "SERVICE STARTED");
         bluetoothIn = new Handler() {
 
@@ -195,6 +216,7 @@ public class BTService extends Service {
                 }
                 if (msg.what == ORDER) {
                     int order = (int) msg.arg1;
+                    Log.d("ORDER",String.valueOf(order));
                     if (order == OVERRANGE) {
                         failedCount++;
                     } else if (order == WARMING) {
@@ -208,15 +230,12 @@ public class BTService extends Service {
 
         };
 
-        btAdapter = BluetoothAdapter.getDefaultAdapter();       // get Bluetooth adapter
 
-
-        return super.onStartCommand(intent, flags, startId);
     }
 
     //Checks that the Android device Bluetooth is available and prompts to be turned on if off
     private void checkBTState() {
-
+        btAdapter = BluetoothAdapter.getDefaultAdapter();       // get Bluetooth adapter
         if (btAdapter == null) {
             Log.d("BT SERVICE", "BLUETOOTH NOT SUPPORTED BY DEVICE, STOPPING SERVICE");
             stopSelf();
@@ -309,6 +328,7 @@ public class BTService extends Service {
                 Log.d("BT SERVICE", "CONNECTED THREAD START FAILED, STOPPING SERVICE");
                 stopSelf();
             }
+
         }
 
         public void closeSocket() {
@@ -336,6 +356,7 @@ public class BTService extends Service {
             OutputStream tmpOut = null;
 
             try {
+
                 //Create I/O streams for connection
                 tmpIn = socket.getInputStream();
                 tmpOut = socket.getOutputStream();
@@ -357,11 +378,14 @@ public class BTService extends Service {
             // Keep looping to listen for received messages
             while (true && !stopThread) {
                 try {
-                    bytes = mmInStream.read(buffer);            //read bytes from input buffer
-                    String readMessage = new String(buffer, 0, bytes);
-                    Log.d("DEBUG BT PART", "CONNECTED THREAD " + readMessage);
+                    //bytes = mmInStream.read(buffer);            //read bytes from input buffer
+                   // String readMessage = new String(buffer, 0, bytes);
+                   // Log.d("DEBUG BT PART", "CONNECTED THREAD " + readMessage);
                     // Send the obtained bytes to the UI Activity via handler
-                    bluetoothIn.obtainMessage(handlerState, bytes, -1, readMessage).sendToTarget();
+                    //bluetoothIn.obtainMessage(handlerState, bytes, -1, readMessage).sendToTarget();
+                    bytes=mmInStream.read();
+                    Log.d("INSTREAM",String.valueOf(bytes));
+                    bluetoothIn.obtainMessage(1,bytes,-1,null).sendToTarget();
                 } catch (IOException e) {
                     Log.d("DEBUG BT", e.toString());
                     Log.d("BT SERVICE", "UNABLE TO READ/WRITE, STOPPING SERVICE");

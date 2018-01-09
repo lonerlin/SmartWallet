@@ -19,7 +19,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     Button bLookingfor;
     String deviceAddress;
     Button bOverrangeWarn;
+    Button bLightTest;
     TextView tvInfo;
+
     private BTService.ConnectingBinder connectingBinder;
 
     private ServiceConnection connection=new ServiceConnection() {
@@ -29,7 +31,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             connectingBinder.getService().setMessageListener(new MsgListener() {
                 @Override
                 public void stateChange(int msg) {
-                    tvInfo.setText(msg);
+                    tvInfo.setText(String.valueOf(msg));
                 }
             });
         }
@@ -52,6 +54,16 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         bOverrangeWarn=(Button)findViewById(R.id.bOverrangeWarn);
         bOverrangeWarn.setOnClickListener(this);
         deviceAddress=readAddress("address");
+        bLightTest=(Button)findViewById(R.id.bLightTest);
+
+
+        bLightTest.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+
+            }
+        });
 
         bindService();
 
@@ -74,6 +86,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 connectingBinder.Connecting(readAddress("address"));
             }
         });
+
     }
 
     void bindService()
@@ -135,6 +148,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                     bOverrangeWarn.setText(R.string.overrangeWarn);
                 }
                 break;
+
 
         }
     }
