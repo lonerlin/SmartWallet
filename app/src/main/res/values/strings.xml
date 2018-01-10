@@ -6,4 +6,6 @@
     <string name="stopLookingFor">停止寻找</string>
     <string name="overrangeWarn">超距报警</string>
     <string name="stopOverrangeWarn">取消超距报警</string>
+    <string name="walletAlarm">开启钱包防盗</string>
+    <string name="stopWalletAlarm">取消钱包防盗</string>
 </resources>

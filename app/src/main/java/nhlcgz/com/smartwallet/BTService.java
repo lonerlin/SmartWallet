@@ -6,6 +6,7 @@ import android.app.Service;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothSocket;
+import android.content.Context;
 import android.content.Intent;
 import android.media.MediaPlayer;
 import android.os.Binder;
@@ -29,6 +30,7 @@ public class BTService extends Service {
     final int ORDER = 1;
     final int WARMING = 2;
     final int OVERRANGE = 1;
+    boolean walletIsAlarm=false;
     private static final UUID BTMODULEUUID = UUID.fromString("00001101-0000-1000-8000-00805F9B34FB");
     // String for MAC address
     private String MAC_ADDRESS = "";
@@ -107,10 +109,12 @@ public class BTService extends Service {
         }
 
         public void antiTheftWarn(boolean isWorking) {
+            walletIsAlarm=false;
             if (isWorking) {
                 write(2);
             } else {
                 write(3);
+                stopWarning();
             }
         }
     }
@@ -134,9 +138,10 @@ public class BTService extends Service {
         super.onCreate();
         startingForeground();
         mediaPlayer = MediaPlayer.create(this, R.raw.bell);
+        vibrator = (Vibrator)getSystemService(Service.VIBRATOR_SERVICE);
     }
 
-    //region PhoneBak Plus
+    /*region PhoneBak Plus*/
     private void PhoneBak(boolean isWorking) {
         if (isWorking) {
             lightSensorManager.start(this);
@@ -176,18 +181,22 @@ public class BTService extends Service {
     //region Play and stop the warning function
     /*播放警告声音*/
     private void warn(int beep) {
-        mediaPlayer.reset();
-        mediaPlayer = MediaPlayer.create(this, beep);
-        mediaPlayer.setLooping(true);
-        mediaPlayer.start();
-       // vibrator = (Vibrator) getSystemService(VIBRATOR_SERVICE);
+        if(!mediaPlayer.isPlaying())
+        {
+            mediaPlayer.reset();
+            mediaPlayer = MediaPlayer.create(this, beep);
+            mediaPlayer.setLooping(true);
+            mediaPlayer.start();
+        }
+
         long[] pattern = {100, 400, 100, 400};   // 停止 开启 停止 开启
-       // vibrator.vibrate(pattern, 10);           //重复两次上面的pattern 如果只想震动一次，index设为-1
+       vibrator.vibrate(pattern, 1);           //重复两次上面的pattern 如果只想震动一次，index设为-1
+
     }
 
     /*播放警告声音停止*/
     private void stopWarning() {
-        if ((mediaPlayer != null) && (mediaPlayer.isPlaying())) {
+        if ((mediaPlayer != null)) {
             mediaPlayer.stop();
         }
         if (vibrator != null) {
@@ -220,7 +229,7 @@ public class BTService extends Service {
                     if (order == OVERRANGE) {
                         failedCount++;
                     } else if (order == WARMING) {
-
+                        warn(R.raw.warning);
                     }
 
 

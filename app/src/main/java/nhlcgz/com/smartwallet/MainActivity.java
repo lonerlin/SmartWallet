@@ -19,6 +19,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     Button bLookingfor;
     String deviceAddress;
     Button bOverrangeWarn;
+    Button bWalletAlarm;
     Button bLightTest;
     TextView tvInfo;
 
@@ -53,6 +54,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         tvInfo=(TextView)findViewById(R.id.tvInfo);
         bOverrangeWarn=(Button)findViewById(R.id.bOverrangeWarn);
         bOverrangeWarn.setOnClickListener(this);
+        bWalletAlarm=(Button)findViewById(R.id.bWalletAlarm);
+        bWalletAlarm.setOnClickListener(this);
         deviceAddress=readAddress("address");
         bLightTest=(Button)findViewById(R.id.bLightTest);
 
@@ -148,6 +151,15 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                     bOverrangeWarn.setText(R.string.overrangeWarn);
                 }
                 break;
+            case R.id.bWalletAlarm:
+                if(bWalletAlarm.getText().toString()==getString(R.string.walletAlarm))
+                {
+                    connectingBinder.antiTheftWarn(true);
+                    bWalletAlarm.setText(R.string.stopWalletAlarm);
+                }else{
+                    connectingBinder.antiTheftWarn(false);
+                    bWalletAlarm.setText(R.string.walletAlarm);
+                }
 
 
         }
