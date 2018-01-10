@@ -21,6 +21,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     Button bOverrangeWarn;
     Button bWalletAlarm;
     Button bLightTest;
+    Button bPhoneBak;
     TextView tvInfo;
 
     private BTService.ConnectingBinder connectingBinder;
@@ -56,6 +57,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         bOverrangeWarn.setOnClickListener(this);
         bWalletAlarm=(Button)findViewById(R.id.bWalletAlarm);
         bWalletAlarm.setOnClickListener(this);
+        bPhoneBak=(Button)findViewById(R.id.bPhoneBak);
+        bPhoneBak.setOnClickListener(this);
         deviceAddress=readAddress("address");
         bLightTest=(Button)findViewById(R.id.bLightTest);
 
@@ -160,6 +163,19 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                     connectingBinder.antiTheftWarn(false);
                     bWalletAlarm.setText(R.string.walletAlarm);
                 }
+                break;
+            case R.id.bPhoneBak:
+                if(bPhoneBak.getText().toString()==getString(R.string.phoneBak))
+                {
+                    connectingBinder.PhoneBak(true);
+                    bPhoneBak.setText(R.string.stopPhoneBak);
+                }else{
+                    connectingBinder.PhoneBak(false);
+                    bPhoneBak.setText(R.string.phoneBak);
+                }
+                break;
+            default:
+                break;
 
 
         }
