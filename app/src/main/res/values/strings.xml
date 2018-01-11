@@ -10,4 +10,5 @@
     <string name="stopWalletAlarm">取消钱包防盗</string>
     <string name="phoneBak">开启手机防盗</string>
     <string name="stopPhoneBak">取消手机防盗</string>
+    <string name="disconnect">断开</string>
 </resources>

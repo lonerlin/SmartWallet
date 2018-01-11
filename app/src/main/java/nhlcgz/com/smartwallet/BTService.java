@@ -74,7 +74,14 @@ public class BTService extends Service {
             // mConnectedThread= new ConnectedThread(bluetoothSocket);
             //mConnectedThread.start();
         }
-
+        public void disConnected()
+        {
+            write(6);
+            stopThread=true;
+            mConnectedThread.closeStreams();
+            mConnectingThread.closeSocket();
+            BTService.this.stopSelf();
+        }
         public void lookingFor(boolean isLooking) {
             if (isLooking) {
                 write(4);

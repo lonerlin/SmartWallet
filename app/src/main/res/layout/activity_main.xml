@@ -86,4 +86,12 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/bWalletAlarm" />
 
+    <Button
+        android:id="@+id/bDisconnect"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/disconnect"
+        tools:layout_editor_absoluteX="44dp"
+        tools:layout_editor_absoluteY="391dp" />
+
 </android.support.constraint.ConstraintLayout>

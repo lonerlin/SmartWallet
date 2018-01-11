@@ -16,6 +16,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     Button bSetting;
     Button bConnecting;
+    Button bDisconnect;
     Button bLookingfor;
     String deviceAddress;
     Button bOverrangeWarn;
@@ -50,6 +51,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         setContentView(R.layout.activity_main);
         bSetting=(Button) findViewById(R.id.bSetting);
         bConnecting=(Button)findViewById(R.id.bConnecting);
+        bDisconnect=(Button)findViewById(R.id.bDisconnect);
         bLookingfor=(Button)findViewById(R.id.bLookingFor);
         bLookingfor.setOnClickListener(this);
         tvInfo=(TextView)findViewById(R.id.tvInfo);
@@ -71,7 +73,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             }
         });
 
-        bindService();
+
 
         if(deviceAddress.contains(""))
         {
@@ -89,9 +91,17 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             @Override
             public void onClick(View v) {
                 Log.d("address","Click");
+                bindService();
                 connectingBinder.Connecting(readAddress("address"));
             }
         });
+        bDisconnect.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                connectingBinder.disConnected();
+            }
+        });
+
 
     }
 
