@@ -116,11 +116,12 @@ public class BTService extends Service {
         }
 
         public void antiTheftWarn(boolean isWorking) {
-            walletIsAlarm = false;
+
             if (isWorking) {
                 antiTheftWarning = false;
                 write(2);
             } else {
+                antiTheftWarning=true;
                 write(3);
                 stopWarning();
             }

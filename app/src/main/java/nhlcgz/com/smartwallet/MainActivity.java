@@ -63,7 +63,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         bPhoneBak.setOnClickListener(this);
         deviceAddress=readAddress("address");
         bLightTest=(Button)findViewById(R.id.bLightTest);
-
+        bindService();
 
         bLightTest.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -91,7 +91,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             @Override
             public void onClick(View v) {
                 Log.d("address","Click");
-                bindService();
+
                 connectingBinder.Connecting(readAddress("address"));
             }
         });
