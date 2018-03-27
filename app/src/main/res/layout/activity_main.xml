@@ -4,24 +4,14 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@drawable/background"
     tools:context="nhlcgz.com.smartwallet.MainActivity">
-
-    <TextView
-        android:id="@+id/tvInfo"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Hello World!"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
 
     <Button
         android:id="@+id/bSetting"
         android:layout_width="142dp"
         android:layout_height="wrap_content"
-        android:layout_marginStart="88dp"
-        android:layout_marginTop="24dp"
+        android:layout_marginStart="168dp"
         android:text="@string/bluetoothSetting"
         app:layout_constraintStart_toEndOf="@+id/bConnecting"
         app:layout_constraintTop_toTopOf="parent" />
@@ -30,8 +20,6 @@
         android:id="@+id/bConnecting"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="32dp"
-        android:layout_marginTop="24dp"
         android:text="@string/connecting"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
@@ -40,8 +28,6 @@
         android:id="@+id/bLookingFor"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="32dp"
-        android:layout_marginTop="28dp"
         android:text="@string/lookingFor"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/bConnecting" />
@@ -50,8 +36,6 @@
         android:id="@+id/bOverrangeWarn"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="32dp"
-        android:layout_marginTop="28dp"
         android:text="@string/overrangeWarn"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/bLookingFor" />
@@ -60,28 +44,24 @@
         android:id="@+id/bLightTest"
         android:layout_width="143dp"
         android:layout_height="51dp"
-        android:layout_marginStart="88dp"
-        android:layout_marginTop="28dp"
+        android:layout_marginStart="168dp"
         android:text="LightTest"
         app:layout_constraintStart_toEndOf="@+id/bLookingFor"
         app:layout_constraintTop_toBottomOf="@+id/bSetting" />
 
     <Button
         android:id="@+id/bWalletAlarm"
-        android:layout_width="wrap_content"
+        android:layout_width="85dp"
         android:layout_height="wrap_content"
-        android:layout_marginStart="32dp"
-        android:layout_marginTop="28dp"
         android:text="@string/walletAlarm"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/bOverrangeWarn" />
 
     <Button
         android:id="@+id/bPhoneBak"
-        android:layout_width="wrap_content"
+        android:layout_width="85dp"
         android:layout_height="wrap_content"
-        android:layout_marginStart="32dp"
-        android:layout_marginTop="20dp"
+        android:layout_marginTop="252dp"
         android:text="@string/phoneBak"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/bWalletAlarm" />
@@ -90,10 +70,69 @@
         android:id="@+id/bDisconnect"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="32dp"
-        android:layout_marginTop="28dp"
         android:text="@string/disconnect"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/bPhoneBak" />
+
+    <ImageButton
+        android:id="@+id/ibConnecting"
+        android:layout_width="87dp"
+        android:layout_height="91dp"
+        android:layout_marginStart="137dp"
+        android:layout_marginTop="325dp"
+
+        android:background="#00000000"
+        android:scaleType="centerInside"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:srcCompat="@drawable/start" />
+
+    <ImageButton
+        android:id="@+id/ibLookFor"
+        android:layout_width="80dp"
+        android:layout_height="80dp"
+        android:layout_marginStart="88dp"
+        android:layout_marginTop="132dp"
+        android:background="#00000000"
+        android:scaleType="centerInside"
+        app:layout_constraintStart_toStartOf="@+id/bWalletAlarm"
+        app:layout_constraintTop_toTopOf="parent"
+        app:srcCompat="@drawable/lookingforw" />
+
+    <ImageButton
+        android:id="@+id/ibWalletAlarm"
+        android:layout_width="80dp"
+        android:layout_height="80dp"
+        android:layout_marginStart="30dp"
+        android:layout_marginTop="132dp"
+        android:background="#00000000"
+        android:scaleType="centerInside"
+        app:layout_constraintStart_toEndOf="@+id/ibLookFor"
+        app:layout_constraintTop_toTopOf="parent"
+        app:srcCompat="@drawable/warningw" />
+
+    <ImageButton
+        android:id="@+id/ibPhoneBak"
+        android:layout_width="80dp"
+        android:layout_height="80dp"
+        android:layout_marginStart="88dp"
+        android:layout_marginTop="28dp"
+        android:background="#00000000"
+        android:scaleType="centerInside"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/ibLookFor"
+        app:srcCompat="@drawable/dogw" />
+
+    <ImageButton
+        android:id="@+id/ibSetting"
+        android:layout_width="80dp"
+        android:layout_height="80dp"
+        android:layout_marginStart="30dp"
+        android:layout_marginTop="28dp"
+        android:background="#00000000"
+        android:scaleType="centerInside"
+        app:layout_constraintStart_toEndOf="@+id/ibPhoneBak"
+        app:layout_constraintTop_toBottomOf="@+id/ibWalletAlarm"
+        app:srcCompat="@drawable/linkw" />
 
 </android.support.constraint.ConstraintLayout>

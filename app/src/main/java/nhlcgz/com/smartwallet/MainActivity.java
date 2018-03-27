@@ -10,6 +10,7 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.TextView;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener{
@@ -23,7 +24,12 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     Button bWalletAlarm;
     Button bLightTest;
     Button bPhoneBak;
-    TextView tvInfo;
+
+
+    ImageButton iConnecting;
+    boolean isConnecting=false;
+
+
 
     private BTService.ConnectingBinder connectingBinder;
 
@@ -34,7 +40,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             connectingBinder.getService().setMessageListener(new MsgListener() {
                 @Override
                 public void stateChange(int msg) {
-                    tvInfo.setText(String.valueOf(msg));
+
                 }
             });
         }
@@ -54,16 +60,21 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         bDisconnect=(Button)findViewById(R.id.bDisconnect);
         bLookingfor=(Button)findViewById(R.id.bLookingFor);
         bLookingfor.setOnClickListener(this);
-        tvInfo=(TextView)findViewById(R.id.tvInfo);
+
         bOverrangeWarn=(Button)findViewById(R.id.bOverrangeWarn);
         bOverrangeWarn.setOnClickListener(this);
         bWalletAlarm=(Button)findViewById(R.id.bWalletAlarm);
         bWalletAlarm.setOnClickListener(this);
         bPhoneBak=(Button)findViewById(R.id.bPhoneBak);
         bPhoneBak.setOnClickListener(this);
-        deviceAddress=readAddress("address");
+        //deviceAddress=readAddress("address");
+        deviceAddress="";
         bLightTest=(Button)findViewById(R.id.bLightTest);
-        bindService();
+
+
+        iConnecting=(ImageButton)findViewById(R.id.ibConnecting);
+        iConnecting.setOnClickListener(this);
+
 
         bLightTest.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -79,7 +90,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         {
             startActivityForResult(new Intent(MainActivity.this,DeviceListActivity.class),1);
         }
-
+        bindService();
         bSetting.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -182,6 +193,20 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 }else{
                     connectingBinder.PhoneBak(false);
                     bPhoneBak.setText(R.string.phoneBak);
+                }
+                break;
+
+            case R.id.ibConnecting:
+                if(isConnecting)
+                {
+                    isConnecting=false;
+                    iConnecting.setImageResource(R.drawable.start);
+                    connectingBinder.disConnected();
+                }else
+                {
+                    isConnecting=true;
+                    iConnecting.setImageResource(R.drawable.stop);
+                    connectingBinder.Connecting(readAddress("address"));
                 }
                 break;
             default:

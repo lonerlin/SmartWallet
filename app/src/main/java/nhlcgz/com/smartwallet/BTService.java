@@ -71,16 +71,18 @@ public class BTService extends Service {
             Log.d("Binder", MAC_ADDRESS);
             buildHandle();
             checkBTState();
+            //overrangeWarn(true);
             // mConnectedThread= new ConnectedThread(bluetoothSocket);
             //mConnectedThread.start();
         }
         public void disConnected()
         {
+           // overrangeWarn(false);
             write(6);
             stopThread=true;
             mConnectedThread.closeStreams();
             mConnectingThread.closeSocket();
-            BTService.this.stopSelf();
+           // BTService.this.stopSelf();
         }
         public void lookingFor(boolean isLooking) {
             if (isLooking) {

@@ -40,6 +40,10 @@ public class DeviceListActivity extends AppCompatActivity {
             }
         } else {
             Toast.makeText(getApplicationContext(), "找不到可以配对的设备……", Toast.LENGTH_LONG).show();
+            Intent intent=new Intent();
+            intent.putExtra("result","");
+            DeviceListActivity.this.setResult(RESULT_OK,intent);
+            finish();
         }
         final ArrayAdapter adapter=new ArrayAdapter(this,android.R.layout.simple_list_item_1,list);
         deviceList.setAdapter(adapter);
