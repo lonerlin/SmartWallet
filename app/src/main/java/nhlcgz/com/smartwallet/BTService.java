@@ -77,11 +77,12 @@ public class BTService extends Service {
         }
         public void disConnected()
         {
-           // overrangeWarn(false);
+            overrangeWarn(false);
             write(6);
             stopThread=true;
             mConnectedThread.closeStreams();
             mConnectingThread.closeSocket();
+            bluetoothIn=null;
            // BTService.this.stopSelf();
         }
         public void lookingFor(boolean isLooking) {
@@ -105,12 +106,13 @@ public class BTService extends Service {
                     public void run() {
                         write(1);
                         failedCount--;
+                        Log.d("overrange","failedCount"+String.valueOf(failedCount));
                         if (failedCount < -5) {
                             warn(R.raw.bell);
                         }
                         //msgListener.stateChange(failedCount);
                     }
-                }, 1000, 1000);
+                }, 1000, 5000);
             } else {
                 stopWarning();
                 timerOverrange.cancel();
@@ -239,6 +241,7 @@ public class BTService extends Service {
                     Log.d("ORDER", String.valueOf(order));
                     if (order == OVERRANGE) {
                         failedCount++;
+                        Log.d("ORDER",String.valueOf(failedCount));
                     } else if (order == WARMING) {
                         if (!antiTheftWarning) {
                             Log.d("antiThifWarning", "Call");

@@ -15,20 +15,25 @@ import android.widget.TextView;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener{
 
-    Button bSetting;
-    Button bConnecting;
-    Button bDisconnect;
-    Button bLookingfor;
+
+
+
+
     String deviceAddress;
-    Button bOverrangeWarn;
-    Button bWalletAlarm;
-    Button bLightTest;
-    Button bPhoneBak;
 
 
+
+    ImageButton iBluetooth;
     ImageButton iConnecting;
     boolean isConnecting=false;
-
+    ImageButton iLookingFor;
+    boolean isLookingFor=false;
+    ImageButton iOverrangeWarn;
+    boolean isOverrangeWarn=false;
+    ImageButton iAntiTheftWarn;
+    boolean isAntiTheftWarn=false;
+    ImageButton iPhoneBak;
+    boolean isPhoneBak=false;
 
 
     private BTService.ConnectingBinder connectingBinder;
@@ -55,63 +60,30 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        bSetting=(Button) findViewById(R.id.bSetting);
-        bConnecting=(Button)findViewById(R.id.bConnecting);
-        bDisconnect=(Button)findViewById(R.id.bDisconnect);
-        bLookingfor=(Button)findViewById(R.id.bLookingFor);
-        bLookingfor.setOnClickListener(this);
 
-        bOverrangeWarn=(Button)findViewById(R.id.bOverrangeWarn);
-        bOverrangeWarn.setOnClickListener(this);
-        bWalletAlarm=(Button)findViewById(R.id.bWalletAlarm);
-        bWalletAlarm.setOnClickListener(this);
-        bPhoneBak=(Button)findViewById(R.id.bPhoneBak);
-        bPhoneBak.setOnClickListener(this);
-        //deviceAddress=readAddress("address");
-        deviceAddress="";
-        bLightTest=(Button)findViewById(R.id.bLightTest);
-
-
+        deviceAddress=readAddress("address");
+        Log.d("Address",deviceAddress);
         iConnecting=(ImageButton)findViewById(R.id.ibConnecting);
         iConnecting.setOnClickListener(this);
+        iBluetooth=(ImageButton)findViewById(R.id.ibBluetooth);
+        iBluetooth.setOnClickListener(this);
+        iPhoneBak=(ImageButton)findViewById(R.id.ibPhoneBak);
+        iPhoneBak.setOnClickListener(this);
+        iAntiTheftWarn=(ImageButton)findViewById(R.id.ibWalletAlarm);
+        iAntiTheftWarn.setOnClickListener(this);
+        iLookingFor=(ImageButton)findViewById(R.id.ibLookFor);
+        iLookingFor.setOnClickListener(this);
+        iOverrangeWarn=(ImageButton)findViewById(R.id.ibOverrangeWarn);
+        iOverrangeWarn.setOnClickListener(this);
 
-
-        bLightTest.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-
-
-            }
-        });
-
-
-
-        if(deviceAddress.contains(""))
+        if(deviceAddress=="")
         {
             startActivityForResult(new Intent(MainActivity.this,DeviceListActivity.class),1);
         }
         bindService();
-        bSetting.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
+        ButtonEnable(false);
 
-                startActivityForResult(new Intent(MainActivity.this,DeviceListActivity.class),1);
-            }
-        });
-        bConnecting.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Log.d("address","Click");
 
-                connectingBinder.Connecting(readAddress("address"));
-            }
-        });
-        bDisconnect.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                connectingBinder.disConnected();
-            }
-        });
 
 
     }
@@ -148,66 +120,78 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         SharedPreferences sharedPreferences=getSharedPreferences("SmartWallet",MODE_WORLD_READABLE);
         return sharedPreferences.getString(key,"");
     }
+    private void ButtonEnable(boolean Enable)
+    {
+        if(Enable)
+        {
+            iLookingFor.setEnabled(true);
+            iAntiTheftWarn.setEnabled(true);
+            iOverrangeWarn.setEnabled(true);
+            iPhoneBak.setEnabled(true);
+        }else
+        {
+            iLookingFor.setEnabled(false);
+            iAntiTheftWarn.setEnabled(false);
+            iOverrangeWarn.setEnabled(false);
+            iPhoneBak.setEnabled(false);
+        }
 
+    }
     @Override
     public void onClick(View v) {
         switch (v.getId())
         {
-            case R.id.bLookingFor:
-                if(bLookingfor.getText().toString()==this.getString(R.string.lookingFor))
-                {
-                    Log.d("MainActivity","Lookingfor");
-                    connectingBinder.lookingFor(true);
-                    bLookingfor.setText(R.string.stopLookingFor);
-                }else
-                {
-                    connectingBinder.lookingFor(false);
-                    bLookingfor.setText(R.string.lookingFor);
-                }
-                break;
-            case R.id.bOverrangeWarn:
-                if(bOverrangeWarn.getText().toString()==this.getString(R.string.overrangeWarn))
-                {
-                    connectingBinder.overrangeWarn(true);
-                    bOverrangeWarn.setText(R.string.stopOverrangeWarn);
-                }else {
-                    connectingBinder.overrangeWarn(false);
-                    bOverrangeWarn.setText(R.string.overrangeWarn);
-                }
-                break;
-            case R.id.bWalletAlarm:
-                if(bWalletAlarm.getText().toString()==getString(R.string.walletAlarm))
-                {
-                    connectingBinder.antiTheftWarn(true);
-                    bWalletAlarm.setText(R.string.stopWalletAlarm);
-                }else{
-                    connectingBinder.antiTheftWarn(false);
-                    bWalletAlarm.setText(R.string.walletAlarm);
-                }
-                break;
-            case R.id.bPhoneBak:
-                if(bPhoneBak.getText().toString()==getString(R.string.phoneBak))
-                {
-                    connectingBinder.PhoneBak(true);
-                    bPhoneBak.setText(R.string.stopPhoneBak);
-                }else{
-                    connectingBinder.PhoneBak(false);
-                    bPhoneBak.setText(R.string.phoneBak);
-                }
-                break;
 
+
+            case R.id.ibBluetooth:
+                startActivityForResult(new Intent(MainActivity.this,DeviceListActivity.class),1);
+                break;
             case R.id.ibConnecting:
                 if(isConnecting)
                 {
                     isConnecting=false;
                     iConnecting.setImageResource(R.drawable.start);
+                    ButtonEnable(false);
                     connectingBinder.disConnected();
                 }else
                 {
                     isConnecting=true;
                     iConnecting.setImageResource(R.drawable.stop);
                     connectingBinder.Connecting(readAddress("address"));
+                    ButtonEnable(true);
                 }
+                break;
+            case R.id.ibLookFor:
+                if(isLookingFor)
+                    iLookingFor.setImageResource(R.drawable.lookingforw);
+                else
+                    iLookingFor.setImageResource(R.drawable.lookingfory);
+                isLookingFor=!isLookingFor;
+                connectingBinder.lookingFor(isLookingFor);
+                break;
+            case R.id.ibOverrangeWarn:
+                if(isOverrangeWarn)
+                    iOverrangeWarn.setImageResource(R.drawable.linkw);
+                else
+                    iOverrangeWarn.setImageResource(R.drawable.linky);
+                isOverrangeWarn=!isOverrangeWarn;
+                connectingBinder.overrangeWarn(isOverrangeWarn);
+                break;
+            case R.id.ibWalletAlarm:
+                if(isAntiTheftWarn)
+                    iAntiTheftWarn.setImageResource(R.drawable.warningw);
+                else
+                    iAntiTheftWarn.setImageResource(R.drawable.warningy);
+                isAntiTheftWarn=!isAntiTheftWarn;
+                connectingBinder.antiTheftWarn(isAntiTheftWarn);
+                break;
+            case R.id.ibPhoneBak:
+                if(isPhoneBak)
+                    iPhoneBak.setImageResource(R.drawable.dogw);
+                else
+                    iPhoneBak.setImageResource(R.drawable.dogy);
+                isPhoneBak=!isPhoneBak;
+                connectingBinder.PhoneBak(isPhoneBak);
                 break;
             default:
                 break;
