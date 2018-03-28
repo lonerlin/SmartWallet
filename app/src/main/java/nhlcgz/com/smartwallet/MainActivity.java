@@ -87,13 +87,26 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
 
     }
-
+    Intent startIntent;
+    Intent bindIntent;
     void bindService()
     {
-        Intent startIntent=new Intent(this,BTService.class);
+       // Intent startIntent=new Intent(this,BTService.class);
+        startIntent=new Intent(this,BTService.class);
         startService(startIntent);
-        Intent bindIntent=new Intent(this,BTService.class);
+        //Intent bindIntent=new Intent(this,BTService.class);
+        bindIntent=new Intent(this,BTService.class);
         bindService(bindIntent,connection,BIND_AUTO_CREATE);
+    }
+
+    @Override
+    public void onBackPressed() {
+        if(isConnecting)
+        {
+
+        }else {
+            super.onBackPressed();
+        }
     }
 
     @Override
@@ -153,8 +166,11 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                     iConnecting.setImageResource(R.drawable.start);
                     ButtonEnable(false);
                     connectingBinder.disConnected();
+                    stopService(bindIntent);
+                    stopService(startIntent);
                 }else
                 {
+                    bindService();
                     isConnecting=true;
                     iConnecting.setImageResource(R.drawable.stop);
                     connectingBinder.Connecting(readAddress("address"));

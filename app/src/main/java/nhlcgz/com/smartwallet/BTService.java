@@ -185,7 +185,7 @@ public class BTService extends Service {
                 new Intent(this, MainActivity.class), 0);
         Notification notification = new Notification.Builder(this)
                 .setContentTitle("Smart Wallet")
-                .setContentText("Smart Wallet on high alert")
+                .setContentText("Smart Wallet on high alert!")
                 .setSmallIcon(R.mipmap.ic_launcher)
                 .setContentIntent(pendingintent)
                 .build();
